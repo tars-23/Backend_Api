@@ -18,3 +18,7 @@ collection = db["std_info"]
 def Greet():
     return "<p>Welcome to Student Management API</p>"
 
+@app.route("/student",methods=["GET"])
+def get_all_books():
+    data = list(collection.find())
+    return jsonify({data})
