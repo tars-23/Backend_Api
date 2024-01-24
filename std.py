@@ -22,16 +22,17 @@ def Greet():
 
 
 @app.route("/students",methods=["GET"])
-def get_all_books():
+@basic_auth.required
+def get_students():
     data = list(collection.find())
     return jsonify({data})
 
 
-@app.route("/students/<int>:std_id>" , methods = ["GET"])
+@app.route("/students/<int:std_id>" , methods = ["GET"])
 def get_students(std_id):
-    std_Id = collection.find_one({"_id" : str(std_id) })
+    std_Id = collection.find_one({"_id":str(std_id) })
     if not std_Id:
-        return jsonify({"error" :"Student not found"}),404
+        return jsonify({"error":"Student not found"}),404
     return jsonify({std_Id})
 
 
@@ -39,23 +40,32 @@ def get_students(std_id):
 @basic_auth.required
 def create_newstudent():
     data = request.get_json()
-    id = collection.find_one({"_id" : data.get("_id")})
+    id = collection.find_one({"_id":data.get("_id")})
     if not id:
-        return jsonify({"error" :"Cannot create new student"}),500
+        return jsonify({"error":"Cannot create new student"}),500
     collection.insert_one(data)
 
 
-@app.route("/students/<int:std_id",methods=["PUT"])
+@app.route("/students/<int:std_id>",methods=["PUT"])
 @basic_auth.required
 def put_studentData(std_id):
     data = request.get_json()
-    id = collection.find_one({"_id" :str(std_id)})
+    id = collection.find_one({"_id":str(std_id)})
     if not id:
-        return jsonify({"error" :"Student not found"}),404
-    collection.update_one({"_id" : str(std_id)}, {"$set" : data})
+        return jsonify({"error":"Student not found"}),404
+    collection.update_one({"_id":str(std_id)},{"$set" : data})
     return jsonify(data) ,200
 
-
+@app.route("/students/<int:std_id>",methods=["DELETE"])
+@basic_auth.required
+def delete_studentData(std_id):
+    data = request.get_json()
+    id = collection.find_one({"_id":str(std_id)})
+    if not id:
+        return jsonify({"message":"Student delete successfully"}),404
+    collection.delete_one({"_id":str(std_id)})
+    return jsonify(data) ,200
+    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port=5000,debug=True)
