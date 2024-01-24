@@ -14,7 +14,7 @@ client = MongoClient(uri)
 # Send a ping to confirm a successful connection
 client.admin.command('ping')
 db = client["students"]
-collection = db["std_info"]
+collection = db["Student_info"]
 
 @app.route("/")
 def Greet():
@@ -43,6 +43,18 @@ def create_newstudent():
     if not id:
         return jsonify({"error" :"Cannot create new student"}),500
     collection.insert_one(data)
+
+
+@app.route("/students/<int:std_id",methods=["PUT"])
+@basic_auth.required
+def put_studentData(std_id):
+    data = request.get_json()
+    id = collection.find_one({"_id" :str(std_id)})
+    if not id:
+        return jsonify({"error" :"Student not found"}),404
+    collection.update_one({"_id" : str(std_id)}, {"$set" : data})
+    return jsonify(data) ,200
+
 
 
 if __name__ == "__main__":
