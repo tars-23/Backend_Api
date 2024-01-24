@@ -1,6 +1,5 @@
 from pymongo.mongo_client import MongoClient
 from flask import request,Flask,jsonify
-from flask_basicauth import BasicAuth
 
 uri = "mongodb+srv://auto123:auto123@cluster0.amvg1ng.mongodb.net/?retryWrites=true&w=majority"
 
@@ -18,7 +17,15 @@ collection = db["std_info"]
 def Greet():
     return "<p>Welcome to Student Management API</p>"
 
-@app.route("/student",methods=["GET"])
+@app.route("/students",methods=["GET"])
 def get_all_books():
     data = list(collection.find())
     return jsonify({data})
+
+@app.route("/students/<int>:std_id>" , methods = ["GET"])
+def get_students(std_id):
+    std_Id = collection.find_one({"_id" : str(std_id) })
+    if not std_Id:
+        return jsonify({"error" :"Student not found"}),404
+    return jsonify({std_Id})
+
