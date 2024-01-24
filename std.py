@@ -45,23 +45,22 @@ def create_newstudent():
 
 @app.route("/students/<int:std_id>",methods=["PUT"])
 @basic_auth.required
-def put_studentData(std_id):
-    data = request.get_json()
+def put_students(std_id):
+    data = request.get_json();
     id = collection.find_one({"_id":str(std_id)})
     if not id:
         return jsonify({"error":"Student not found"}),404
-    collection.update_one({"_id":str(std_id)},{"$set" : data})
-    return jsonify(data) ,200
+    collection.update_one({"_id": str(std_id)}, {"$set": data})
+    return jsonify(data),200
 
 @app.route("/students/<int:std_id>",methods=["DELETE"])
 @basic_auth.required
 def delete_studentData(std_id):
-    data = request.get_json()
     id = collection.find_one({"_id":str(std_id)})
     if not id:
-        return jsonify({"message":"Student delete successfully"}),404
+        return jsonify({"error":"Student not found"}),404
     collection.delete_one({"_id":str(std_id)})
-    return jsonify(data) ,200
+    return jsonify({"message":"Student delete successfully"}),200
     
 
 if __name__ == "__main__":
