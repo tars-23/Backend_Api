@@ -14,27 +14,24 @@ client = MongoClient(uri)
 # Send a ping to confirm a successful connection
 client.admin.command('ping')
 db = client["students"]
-collection = db["Student_info"]
+collection = db["std_info"]
 
 @app.route("/")
 def Greet():
     return "<p>Welcome to Student Management API</p>"
 
-
 @app.route("/students",methods=["GET"])
 @basic_auth.required
-def get_students():
+def get_student():
     data = list(collection.find())
-    return jsonify({data})
+    return jsonify(data)
 
-
-@app.route("/students/<int:std_id>" , methods = ["GET"])
+@app.route("/students/<int:std_id>",methods = ["GET"])
 def get_students(std_id):
-    std_Id = collection.find_one({"_id":str(std_id) })
-    if not std_Id:
+    data = collection.find_one({"_id":str(std_id)})
+    if not data:
         return jsonify({"error":"Student not found"}),404
-    return jsonify({std_Id})
-
+    return jsonify(data)
 
 @app.route("/students",methods=["POST"])
 @basic_auth.required
@@ -44,7 +41,6 @@ def create_newstudent():
     if not id:
         return jsonify({"error":"Cannot create new student"}),500
     collection.insert_one(data)
-
 
 @app.route("/students/<int:std_id>",methods=["PUT"])
 @basic_auth.required
