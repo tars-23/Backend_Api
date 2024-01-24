@@ -38,9 +38,10 @@ def get_students(std_id):
 def create_newstudent():
     data = request.get_json()
     id = collection.find_one({"_id":data.get("_id")})
-    if not id:
+    if id:
         return jsonify({"error":"Cannot create new student"}),500
     collection.insert_one(data)
+    return jsonify(data),200
 
 @app.route("/students/<int:std_id>",methods=["PUT"])
 @basic_auth.required
